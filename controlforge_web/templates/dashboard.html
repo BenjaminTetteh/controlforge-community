@@ -155,107 +155,120 @@ ControlForge Dashboard
 </table>
 
 
-
-
-
 <h2>Findings Summary</h2>
 
-<form method="get">
+<form method="get" class="filter-panel">
 
-    <label for="search">
-        Search Findings:
-    </label>
+    <div class="filter-group">
 
-    <input
-        type="text"
-        id="search"
-        name="search"
-        value="{{ search_query }}"
-        placeholder="Search findings..."
-    >
+        <label for="search">
+            Search
+        </label>
 
-    {% if selected_severity %}
-    <input
-        type="hidden"
-        name="severity"
-        value="{{ selected_severity }}"
-    >
-    {% endif %}
-
-    <button type="submit">
-        Search
-    </button>
-
-</form>
-
-<form method="get">
-    <label for="severity">Filter by Severity:</label>
-
-    <select name="severity" id="severity">
-        <option value="">All</option>
-        <option value="Critical" {% if selected_severity == "Critical" %}selected{% endif %}>Critical</option>
-        <option value="High" {% if selected_severity == "High" %}selected{% endif %}>High</option>
-        <option value="Medium" {% if selected_severity == "Medium" %}selected{% endif %}>Medium</option>
-        <option value="Low" {% if selected_severity == "Low" %}selected{% endif %}>Low</option>
-    </select>
-
-    {% if search_query %}
-    <input
-        type="hidden"
-        name="search"
-        value="{{ search_query }}"
-    >
-    {% endif %}
-
-    <button type="submit">Apply</button>
-</form>
-
-<form method="get">
-
-    <label for="owner">
-        Filter by Owner:
-    </label>
-
-    <select name="owner" id="owner">
-
-        <option value="">
-            All
-        </option>
-
-        {% for owner in owners %}
-
-        <option
-            value="{{ owner }}"
-            {% if selected_owner == owner %}
-            selected
-            {% endif %}
+        <input
+            type="text"
+            id="search"
+            name="search"
+            value="{{ search_query }}"
+            placeholder="Search findings..."
         >
-            {{ owner }}
-        </option>
 
-        {% endfor %}
+    </div>
 
-    </select>
+    <div class="filter-group">
 
-    {% if search_query %}
-    <input
-        type="hidden"
-        name="search"
-        value="{{ search_query }}"
-    >
-    {% endif %}
+        <label for="severity">
+            Severity
+        </label>
 
-    {% if selected_severity %}
-    <input
-        type="hidden"
-        name="severity"
-        value="{{ selected_severity }}"
-    >
-    {% endif %}
+        <select
+            name="severity"
+            id="severity"
+        >
 
-    <button type="submit">
-        Apply
-    </button>
+            <option value="">
+                All
+            </option>
+
+            <option
+                value="Critical"
+                {% if selected_severity == "Critical" %}
+                selected
+                {% endif %}
+            >
+                Critical
+            </option>
+
+            <option
+                value="High"
+                {% if selected_severity == "High" %}
+                selected
+                {% endif %}
+            >
+                High
+            </option>
+
+            <option
+                value="Medium"
+                {% if selected_severity == "Medium" %}
+                selected
+                {% endif %}
+            >
+                Medium
+            </option>
+
+            <option
+                value="Low"
+                {% if selected_severity == "Low" %}
+                selected
+                {% endif %}
+            >
+                Low
+            </option>
+
+        </select>
+
+    </div>
+
+    <div class="filter-group">
+
+        <label for="owner">
+            Owner
+        </label>
+
+        <select
+            name="owner"
+            id="owner"
+        >
+
+            <option value="">
+                All
+            </option>
+
+            {% for owner in owners %}
+
+            <option
+                value="{{ owner }}"
+                {% if selected_owner == owner %}
+                selected
+                {% endif %}
+            >
+                {{ owner }}
+            </option>
+
+            {% endfor %}
+
+        </select>
+
+    </div>
+
+    <div class="filter-group">
+
+        <button type="submit">
+            Apply Filters
+        </button>
+
+    </div>
 
 </form>
 

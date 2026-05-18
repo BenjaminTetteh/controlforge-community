@@ -113,3 +113,27 @@ th {
     background: #b71c1c;
     color: white;
 }
+
+.filter-panel {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    align-items: end;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.filter-group label {
+    margin-bottom: 6px;
+    font-weight: bold;
+}
+
+.filter-group input,
+.filter-group select {
+    padding: 8px;
+    min-width: 180px;
+}
