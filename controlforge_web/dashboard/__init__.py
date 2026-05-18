@@ -173,5 +173,6 @@ def engagement_dashboard(
         selected_severity=severity_filter,
         kpi_classes=kpi_classes,
         charts=dashboard_context["charts"],
-        remediation_metrics=dashboard_context["remediation_metrics"]
+        remediation_metrics=dashboard_context["remediation_metrics"],
+        owner_summary=dashboard_context["owner_summary"],
     )

@@ -73,6 +73,36 @@ ControlForge Dashboard
 
 </div>
 
+<h2>Remediation Ownership</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Owner</th>
+            <th>Open</th>
+            <th>Closed</th>
+            <th>Overdue</th>
+            <th>Total</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        {% for owner, metrics in owner_summary.items() %}
+
+        <tr>
+            <td>{{ owner }}</td>
+            <td>{{ metrics.open }}</td>
+            <td>{{ metrics.closed }}</td>
+            <td>{{ metrics.overdue }}</td>
+            <td>{{ metrics.total }}</td>
+        </tr>
+
+        {% endfor %}
+
+    </tbody>
+</table>
+
 <h2>Governance Visuals</h2>
 
 <div class="card-grid">

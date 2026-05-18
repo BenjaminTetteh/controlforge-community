@@ -89,6 +89,7 @@ def determine_dominant_themes(
             theme
             .replace("_", " ")
         )
+
         readable_theme = (
             readable_theme.capitalize()
         )

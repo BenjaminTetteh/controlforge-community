@@ -122,6 +122,37 @@ def build_dashboard_context(
         trends=trends
     )
 
+    owner_summary = {}
+
+    for finding in findings:
+
+        owner = finding.get(
+            "remediation_owner",
+            "Unassigned"
+        )
+
+        if owner not in owner_summary:
+
+            owner_summary[owner] = {
+                "open": 0,
+                "closed": 0,
+                "overdue": 0,
+                "total": 0
+            }
+
+        owner_summary[owner]["total"] += 1
+
+        status = finding.get("status")
+
+        if status == "Open":
+            owner_summary[owner]["open"] += 1
+
+        elif status == "Closed":
+            owner_summary[owner]["closed"] += 1
+
+        elif status == "Overdue":
+            owner_summary[owner]["overdue"] += 1
+
     return {
         "engagement": engagement_context,
         "kpis": kpis,
@@ -136,5 +167,7 @@ def build_dashboard_context(
             "closed": closed_findings,
             "overdue": overdue_findings,
             "completion": remediation_completion
-        }
+        },
+        "owner_summary": owner_summary
     }
+
