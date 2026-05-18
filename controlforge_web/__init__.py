@@ -4,6 +4,9 @@ from controlforge_web.config import Config
 
 from controlforge_web.dashboard import dashboard_bp
 
+from controlforge_web.findings import findings_bp
+
+
 
 def create_app():
 
@@ -24,6 +27,12 @@ def create_app():
     app.register_blueprint(
         dashboard_bp
     )    
+
+    app.register_blueprint(
+        findings_bp
+    )
+
+    
 
     return app
 

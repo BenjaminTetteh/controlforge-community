@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}
+Finding Detail
+{% endblock %}
+
+{% block content %}
+
+<h2>Finding Detail</h2>
+
+<table>
+    <tr>
+        <th>Finding ID</th>
+        <td>{{ finding.finding_id }}</td>
+    </tr>
+    <tr>
+        <th>Severity</th>
+        <td>
+            <span class="badge badge-{{ finding.severity|lower }}">
+                {{ finding.severity }}
+            </span>
+        </td>
+    </tr>
+    <tr>
+        <th>Control</th>
+        <td>{{ finding.control_name }}</td>
+    </tr>
+    <tr>
+        <th>Affected User</th>
+        <td>{{ finding.affected_user }}</td>
+    </tr>
+    <tr>
+        <th>Source System</th>
+        <td>{{ finding.source_system }}</td>
+    </tr>
+    <tr>
+        <th>Status</th>
+        <td>{{ finding.status }}</td>
+    </tr>
+    <tr>
+        <th>Owner</th>
+        <td>{{ finding.remediation_owner }}</td>
+    </tr>
+    <tr>
+        <th>Issue Description</th>
+        <td>{{ finding.issue_description }}</td>
+    </tr>
+</table>
+
+<p>
+    <a href="{{ request.referrer or url_for('dashboard.engagement_list') }}">
+        ← Back
+    </a>
+</p>
+
+{% endblock %}

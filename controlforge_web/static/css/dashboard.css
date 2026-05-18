@@ -66,3 +66,50 @@ td {
 th {
     background: #eef2f7;
 }
+
+.badge {
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.badge-critical {
+    background: #ffebee;
+    color: #b71c1c;
+}
+
+.badge-high {
+    background: #fff3e0;
+    color: #e65100;
+}
+
+.badge-medium {
+    background: #fffde7;
+    color: #827717;
+}
+
+.badge-low {
+    background: #e8f5e9;
+    color: #1b5e20;
+}
+
+.status-open {
+    background: #ffebee;
+    color: #b71c1c;
+}
+
+.status-in-progress {
+    background: #fff3e0;
+    color: #e65100;
+}
+
+.status-closed {
+    background: #e8f5e9;
+    color: #1b5e20;
+}
+
+.status-overdue {
+    background: #b71c1c;
+    color: white;
+}

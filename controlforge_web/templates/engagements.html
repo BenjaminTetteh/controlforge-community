@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}
+ControlForge Engagements
+{% endblock %}
+
+{% block content %}
+
+<h2>Available Engagements</h2>
+
+{% if engagements %}
+<table>
+    <thead>
+        <tr>
+            <th>Client</th>
+            <th>Engagement</th>
+            <th>Dashboard</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for item in engagements %}
+        <tr>
+            <td>{{ item.client }}</td>
+            <td>{{ item.engagement }}</td>
+            <td>
+                <a href="{{ url_for(
+                    'dashboard.engagement_dashboard',
+                    client_slug=item.client,
+                    engagement_slug=item.engagement
+                ) }}">
+                    Open Dashboard
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No engagements found.</p>
+{% endif %}
+
+{% endblock %}

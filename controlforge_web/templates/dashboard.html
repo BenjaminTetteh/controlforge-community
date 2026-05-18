@@ -47,6 +47,56 @@ ControlForge Dashboard
 
 </div>
 
+<h2>Remediation Metrics</h2>
+
+<div class="card-grid">
+
+    <div class="kpi-card">
+        <h3>Open Findings</h3>
+        <p>{{ remediation_metrics.open }}</p>
+    </div>
+
+    <div class="kpi-card">
+        <h3>Closed Findings</h3>
+        <p>{{ remediation_metrics.closed }}</p>
+    </div>
+
+    <div class="kpi-card">
+        <h3>Overdue Findings</h3>
+        <p>{{ remediation_metrics.overdue }}</p>
+    </div>
+
+    <div class="kpi-card">
+        <h3>Completion %</h3>
+        <p>{{ remediation_metrics.completion }}%</p>
+    </div>
+
+</div>
+
+<h2>Governance Visuals</h2>
+
+<div class="card-grid">
+
+    <div class="kpi-card">
+        <h3>Findings by Severity</h3>
+        <img
+            src="{{ url_for('static', filename=charts.severity_chart) }}"
+            alt="Findings by Severity Chart"
+            style="max-width: 100%;"
+        >
+    </div>
+
+    <div class="kpi-card">
+        <h3>Governance Heatmap</h3>
+        <img
+            src="{{ url_for('static', filename=charts.heatmap_chart) }}"
+            alt="Governance Risk Heatmap"
+            style="max-width: 100%;"
+        >
+    </div>
+
+</div>
+
 
 <h2>Risk Concentration</h2>
 
@@ -73,5 +123,144 @@ ControlForge Dashboard
         {% endfor %}
     </tbody>
 </table>
+
+
+
+
+
+<h2>Findings Summary</h2>
+
+<form method="get">
+
+    <label for="search">
+        Search Findings:
+    </label>
+
+    <input
+        type="text"
+        id="search"
+        name="search"
+        value="{{ search_query }}"
+        placeholder="Search findings..."
+    >
+
+    {% if selected_severity %}
+    <input
+        type="hidden"
+        name="severity"
+        value="{{ selected_severity }}"
+    >
+    {% endif %}
+
+    <button type="submit">
+        Search
+    </button>
+
+</form>
+
+<form method="get">
+    <label for="severity">Filter by Severity:</label>
+
+    <select name="severity" id="severity">
+        <option value="">All</option>
+        <option value="Critical" {% if selected_severity == "Critical" %}selected{% endif %}>Critical</option>
+        <option value="High" {% if selected_severity == "High" %}selected{% endif %}>High</option>
+        <option value="Medium" {% if selected_severity == "Medium" %}selected{% endif %}>Medium</option>
+        <option value="Low" {% if selected_severity == "Low" %}selected{% endif %}>Low</option>
+    </select>
+
+    {% if search_query %}
+    <input
+        type="hidden"
+        name="search"
+        value="{{ search_query }}"
+    >
+    {% endif %}
+
+    <button type="submit">Apply</button>
+</form>
+
+<table>
+    <thead>
+        <tr>
+            <th>Finding ID</th>
+            <th>Severity</th>
+            <th>Control</th>
+            <th>Affected User</th>
+            <th>Status</th>
+            <th>Owner</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% if findings %}
+            {% for finding in findings %}
+            <tr>
+                <td>
+                    <a href="{{ url_for(
+                        'findings.finding_detail',
+                        client_slug=request.view_args.client_slug,
+                        engagement_slug=request.view_args.engagement_slug,
+                        finding_id=finding.finding_id
+                    ) }}">
+                        {{ finding.finding_id }}
+                    </a>
+                </td>
+                <td>
+                    <span class="badge badge-{{ finding.severity|lower }}">
+                        {{ finding.severity }}
+                    </span>
+                </td>
+                <td>{{ finding.control_name }}</td>
+                <td>{{ finding.affected_user }}</td>
+                <td>
+                    <span class="badge status-{{ finding.status|lower|replace(' ', '-') }}">
+                        {{ finding.status }}
+                    </span>
+                </td>
+                <td>{{ finding.remediation_owner }}</td>
+            </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="6">No findings available for this engagement.</td>
+            </tr>
+        {% endif %}
+    </tbody>
+</table>
+
+{% if total_pages > 1 %}
+<div>
+    {% if page > 1 %}
+    <a href="{{ url_for(
+        'dashboard.engagement_dashboard',
+        client_slug=request.view_args.client_slug,
+        engagement_slug=request.view_args.engagement_slug,
+        search=search_query,
+        severity=selected_severity,
+        page=page-1
+    ) }}">
+        Previous
+    </a>
+    {% endif %}
+
+    <span>
+        Page {{ page }} of {{ total_pages }}
+    </span>
+
+    {% if page < total_pages %}
+    <a href="{{ url_for(
+        'dashboard.engagement_dashboard',
+        client_slug=request.view_args.client_slug,
+        engagement_slug=request.view_args.engagement_slug,
+        search=search_query,
+        severity=selected_severity,
+        page=page+1
+    ) }}">
+        Next
+    </a>
+    {% endif %}
+</div>
+{% endif %}
 
 {% endblock %}
