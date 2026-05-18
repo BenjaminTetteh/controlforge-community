@@ -210,6 +210,55 @@ ControlForge Dashboard
     <button type="submit">Apply</button>
 </form>
 
+<form method="get">
+
+    <label for="owner">
+        Filter by Owner:
+    </label>
+
+    <select name="owner" id="owner">
+
+        <option value="">
+            All
+        </option>
+
+        {% for owner in owners %}
+
+        <option
+            value="{{ owner }}"
+            {% if selected_owner == owner %}
+            selected
+            {% endif %}
+        >
+            {{ owner }}
+        </option>
+
+        {% endfor %}
+
+    </select>
+
+    {% if search_query %}
+    <input
+        type="hidden"
+        name="search"
+        value="{{ search_query }}"
+    >
+    {% endif %}
+
+    {% if selected_severity %}
+    <input
+        type="hidden"
+        name="severity"
+        value="{{ selected_severity }}"
+    >
+    {% endif %}
+
+    <button type="submit">
+        Apply
+    </button>
+
+</form>
+
 <table>
     <thead>
         <tr>

@@ -80,6 +80,7 @@ def engagement_dashboard(
     )
 
     severity_filter = request.args.get("severity")
+    owner_filter = request.args.get("owner")
     search_query = request.args.get(
         "search",
         ""
@@ -91,6 +92,16 @@ def engagement_dashboard(
             finding
             for finding in findings
             if finding.get("severity") == severity_filter
+        ]
+
+    if owner_filter:
+
+        findings = [
+            finding
+            for finding in findings
+            if finding.get(
+                "remediation_owner"
+            ) == owner_filter
         ]
 
     if search_query:
@@ -175,4 +186,14 @@ def engagement_dashboard(
         charts=dashboard_context["charts"],
         remediation_metrics=dashboard_context["remediation_metrics"],
         owner_summary=dashboard_context["owner_summary"],
+        selected_owner=owner_filter,
+        owners=sorted(
+            set(
+                finding.get(
+                    "remediation_owner",
+                    "Unassigned"
+                )
+                for finding in dashboard_context["findings"]
+            )
+        ),
     )
