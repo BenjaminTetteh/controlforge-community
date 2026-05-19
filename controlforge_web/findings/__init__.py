@@ -1,10 +1,22 @@
+import json
 import re
 from pathlib import Path
 
-from flask import Blueprint, abort, render_template
+from flask import (
+    Blueprint,
+    abort,
+    redirect,
+    render_template,
+    request,
+    url_for
+)
 
 from controlforge.analytics.findings_loader import (
     load_saved_findings
+)
+
+from controlforge.audit.audit_logger import (
+    write_audit_event
 )
 
 
@@ -13,6 +25,14 @@ findings_bp = Blueprint(
     __name__,
     url_prefix="/findings"
 )
+
+
+ALLOWED_STATUSES = [
+    "Open",
+    "In Progress",
+    "Closed",
+    "Overdue"
+]
 
 
 def is_safe_slug(value: str) -> bool:
@@ -33,10 +53,18 @@ def is_safe_finding_id(value: str) -> bool:
     )
 
 
-@findings_bp.route(
-    "/<client_slug>/<engagement_slug>/<finding_id>"
-)
-def finding_detail(
+def get_engagement_path(
+    client_slug: str,
+    engagement_slug: str
+):
+    return (
+        Path("clients")
+        / client_slug
+        / engagement_slug
+    )
+
+
+def validate_route_params(
     client_slug,
     engagement_slug,
     finding_id
@@ -49,18 +77,11 @@ def finding_detail(
     ):
         abort(400)
 
-    engagement_path = (
-        Path("clients")
-        / client_slug
-        / engagement_slug
-    )
 
-    if not engagement_path.exists():
-        abort(404)
-
-    findings = load_saved_findings(
-        engagement_path / "findings"
-    )
+def get_finding_or_404(
+    findings,
+    finding_id
+):
 
     finding = next(
         (
@@ -74,7 +95,129 @@ def finding_detail(
     if not finding:
         abort(404)
 
+    return finding
+
+
+@findings_bp.route(
+    "/<client_slug>/<engagement_slug>/<finding_id>"
+)
+def finding_detail(
+    client_slug,
+    engagement_slug,
+    finding_id
+):
+
+    validate_route_params(
+        client_slug,
+        engagement_slug,
+        finding_id
+    )
+
+    engagement_path = get_engagement_path(
+        client_slug,
+        engagement_slug
+    )
+
+    if not engagement_path.exists():
+        abort(404)
+
+    findings = load_saved_findings(
+        engagement_path / "findings"
+    )
+
+    finding = get_finding_or_404(
+        findings,
+        finding_id
+    )
+
     return render_template(
         "finding_detail.html",
-        finding=finding
+        finding=finding,
+        allowed_statuses=ALLOWED_STATUSES
+    )
+
+
+@findings_bp.route(
+    "/<client_slug>/<engagement_slug>/<finding_id>/status",
+    methods=["POST"]
+)
+def update_finding_status(
+    client_slug,
+    engagement_slug,
+    finding_id
+):
+
+    validate_route_params(
+        client_slug,
+        engagement_slug,
+        finding_id
+    )
+
+    engagement_path = get_engagement_path(
+        client_slug,
+        engagement_slug
+    )
+
+    if not engagement_path.exists():
+        abort(404)
+
+    findings_path = (
+        engagement_path
+        / "findings"
+    )
+
+    findings = load_saved_findings(
+        findings_path
+    )
+
+    finding = get_finding_or_404(
+        findings,
+        finding_id
+    )
+
+    new_status = request.form.get(
+        "status"
+    )
+
+    if new_status not in ALLOWED_STATUSES:
+        abort(400)
+
+    old_status = finding.get(
+        "status"
+    )
+
+    if old_status != new_status:
+
+        finding["status"] = new_status
+
+        findings_file = (
+            findings_path
+            / "findings.json"
+        )
+
+        with open(findings_file, "w") as file:
+            json.dump(
+                findings,
+                file,
+                indent=2
+            )
+
+        write_audit_event(
+            engagement_path=engagement_path,
+            action="update_finding_status",
+            performed_by="local-user",
+            details={
+                "finding_id": finding_id,
+                "old_status": old_status,
+                "new_status": new_status
+            }
+        )
+
+    return redirect(
+        url_for(
+            "findings.finding_detail",
+            client_slug=client_slug,
+            engagement_slug=engagement_slug,
+            finding_id=finding_id
+        )
     )

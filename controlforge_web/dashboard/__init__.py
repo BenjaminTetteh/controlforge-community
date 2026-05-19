@@ -210,4 +210,5 @@ def engagement_dashboard(
                 for finding in dashboard_context["findings"]
             )
         ),
+        audit_events=dashboard_context["audit_events"],
     )

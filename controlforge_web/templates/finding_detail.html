@@ -9,10 +9,12 @@ Finding Detail
 <h2>Finding Detail</h2>
 
 <table>
+
     <tr>
         <th>Finding ID</th>
         <td>{{ finding.finding_id }}</td>
     </tr>
+
     <tr>
         <th>Severity</th>
         <td>
@@ -21,35 +23,90 @@ Finding Detail
             </span>
         </td>
     </tr>
+
     <tr>
         <th>Control</th>
         <td>{{ finding.control_name }}</td>
     </tr>
+
     <tr>
         <th>Affected User</th>
         <td>{{ finding.affected_user }}</td>
     </tr>
+
     <tr>
         <th>Source System</th>
         <td>{{ finding.source_system }}</td>
     </tr>
+
     <tr>
         <th>Status</th>
-        <td>{{ finding.status }}</td>
+        <td>
+            <span class="badge status-{{ finding.status|lower|replace(' ', '-') }}">
+                {{ finding.status }}
+            </span>
+        </td>
     </tr>
+
     <tr>
         <th>Owner</th>
         <td>{{ finding.remediation_owner }}</td>
     </tr>
+
     <tr>
         <th>Issue Description</th>
         <td>{{ finding.issue_description }}</td>
     </tr>
+
 </table>
 
+<h3>Update Finding Status</h3>
+
+<form method="post"
+      action="{{ url_for(
+        'findings.update_finding_status',
+        client_slug=request.view_args.client_slug,
+        engagement_slug=request.view_args.engagement_slug,
+        finding_id=finding.finding_id
+      ) }}">
+
+    <label for="status">
+        New Status
+    </label>
+
+    <select
+        name="status"
+        id="status"
+    >
+
+        {% for status in allowed_statuses %}
+
+        <option
+            value="{{ status }}"
+            {% if finding.status == status %}
+            selected
+            {% endif %}
+        >
+            {{ status }}
+        </option>
+
+        {% endfor %}
+
+    </select>
+
+    <button type="submit">
+        Update Status
+    </button>
+
+</form>
+
 <p>
-    <a href="{{ request.referrer or url_for('dashboard.engagement_list') }}">
-        ← Back
+    <a href="{{ url_for(
+        'dashboard.engagement_dashboard',
+        client_slug=request.view_args.client_slug,
+        engagement_slug=request.view_args.engagement_slug
+    ) }}">
+        ← Back to Dashboard
     </a>
 </p>
 

@@ -357,4 +357,42 @@ ControlForge Dashboard
 </div>
 {% endif %}
 
+<h2>Recent Audit Activity</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Timestamp</th>
+            <th>Action</th>
+            <th>Performed By</th>
+            <th>Details</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% if audit_events %}
+            {% for event in audit_events %}
+            <tr>
+                <td>{{ event.timestamp }}</td>
+                <td>{{ event.action }}</td>
+                <td>{{ event.performed_by }}</td>
+                <td>
+                    Finding {{ event.details.finding_id }}
+                    changed from
+                    {{ event.details.old_status }}
+                    to
+                    {{ event.details.new_status }}
+                </td>
+            </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="4">
+                    No audit events available.
+                </td>
+            </tr>
+        {% endif %}
+    </tbody>
+</table>
+
 {% endblock %}

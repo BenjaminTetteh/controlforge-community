@@ -28,6 +28,9 @@ from controlforge.reports.governance_heatmap import (
     generate_governance_heatmap
 )
 
+from controlforge.audit.audit_reader import (
+    load_audit_events
+)
 
 def build_dashboard_context(
     client_slug,
@@ -153,6 +156,12 @@ def build_dashboard_context(
         elif status == "Overdue":
             owner_summary[owner]["overdue"] += 1
 
+    audit_events = load_audit_events(
+        engagement_path
+        / "audit_logs"
+        / "events.jsonl"
+    )
+
     return {
         "engagement": engagement_context,
         "kpis": kpis,
@@ -168,6 +177,7 @@ def build_dashboard_context(
             "overdue": overdue_findings,
             "completion": remediation_completion
         },
-        "owner_summary": owner_summary
+        "owner_summary": owner_summary,
+        "audit_events": audit_events[:20],
     }
 
