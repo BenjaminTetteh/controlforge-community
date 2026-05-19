@@ -25,7 +25,7 @@
       "SOC2 CC6.2",
       "ISO27001 A.5.18"
     ],
-    "status": "Open",
+    "status": "Closed",
     "remediation_owner": "Unassigned",
     "remediation_status": "Pending",
     "remediation_evidence": "",
@@ -103,7 +103,7 @@
       "SOC2 CC6.2",
       "ISO27001 A.5.18"
     ],
-    "status": "Open",
+    "status": "Overdue",
     "remediation_owner": "Unassigned",
     "remediation_status": "Pending",
     "remediation_evidence": "",
@@ -141,7 +141,7 @@
       "SOC2 CC6.1",
       "ISO27001 A.5.15"
     ],
-    "status": "Open",
+    "status": "Closed",
     "remediation_owner": "Unassigned",
     "remediation_status": "Pending",
     "remediation_evidence": "",

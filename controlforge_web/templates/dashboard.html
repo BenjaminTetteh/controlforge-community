@@ -342,6 +342,8 @@ ControlForge Dashboard
 </div>
 {% endif %}
 
+
+{% if current_user.role in ["Auditor", "Manager"] %}
 <h2>Recent Audit Activity</h2>
 
 <table>
@@ -379,5 +381,6 @@ ControlForge Dashboard
         {% endif %}
     </tbody>
 </table>
+{% endif %}
 
 {% endblock %}

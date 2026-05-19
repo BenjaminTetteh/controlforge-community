@@ -60,6 +60,9 @@ Finding Detail
 
 </table>
 
+
+{% if current_user.role in ["Auditor", "Manager"] %}
+
 <h3>Update Finding Status</h3>
 
 <form method="post"
@@ -69,6 +72,12 @@ Finding Detail
         engagement_slug=request.view_args.engagement_slug,
         finding_id=finding.finding_id
       ) }}">
+
+    <input
+        type="hidden"
+        name="csrf_token"
+        value="{{ csrf_token() }}"
+    >
 
     <label for="status">
         New Status
@@ -99,6 +108,14 @@ Finding Detail
     </button>
 
 </form>
+
+{% else %}
+
+<p>
+    You have read-only access to this finding.
+</p>
+
+{% endif %}
 
 <p>
     <a href="{{ url_for(

@@ -19,6 +19,11 @@ from controlforge.audit.audit_logger import (
     write_audit_event
 )
 
+from flask_login import login_required
+
+from controlforge_web.auth.permissions import (
+    roles_required
+)
 
 findings_bp = Blueprint(
     "findings",
@@ -101,6 +106,7 @@ def get_finding_or_404(
 @findings_bp.route(
     "/<client_slug>/<engagement_slug>/<finding_id>"
 )
+@login_required
 def finding_detail(
     client_slug,
     engagement_slug,
@@ -141,6 +147,8 @@ def finding_detail(
     "/<client_slug>/<engagement_slug>/<finding_id>/status",
     methods=["POST"]
 )
+@login_required
+@roles_required(["Auditor", "Manager"])
 def update_finding_status(
     client_slug,
     engagement_slug,

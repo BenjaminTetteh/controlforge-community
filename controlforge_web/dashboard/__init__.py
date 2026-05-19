@@ -10,6 +10,9 @@ from controlforge.context.engagement_discovery import (
     discover_engagements
 )
 
+from flask_login import login_required
+
+
 dashboard_bp = Blueprint(
     "dashboard",
     __name__,
@@ -56,6 +59,7 @@ def get_trend_class(trend):
 
 
 @dashboard_bp.route("/")
+@login_required
 def engagement_list():
 
     engagements = discover_engagements()
@@ -69,6 +73,8 @@ def engagement_list():
 @dashboard_bp.route(
     "/<client_slug>/<engagement_slug>"
 )
+
+@login_required
 def engagement_dashboard(
     client_slug,
     engagement_slug
