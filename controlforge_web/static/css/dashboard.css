@@ -137,3 +137,9 @@ th {
     padding: 8px;
     min-width: 180px;
 }
+
+.filter-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}

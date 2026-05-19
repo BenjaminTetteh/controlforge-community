@@ -140,14 +140,61 @@ def engagement_dashboard(
             )
         ]
 
-    findings = sorted(
-        findings,
-        key=lambda finding: SEVERITY_RANK.get(
-            finding.get("severity"),
-            0
-        ),
-        reverse=True
-    )
+    sort_by = request.args.get(
+        "sort",
+        "severity_desc"
+    )    
+
+    if sort_by == "severity_asc":
+
+        findings = sorted(
+            findings,
+            key=lambda finding: SEVERITY_RANK.get(
+                finding.get("severity"),
+                0
+            )
+        )
+
+    elif sort_by == "owner":
+
+        findings = sorted(
+            findings,
+            key=lambda finding: finding.get(
+                "remediation_owner",
+                ""
+            )
+        )
+
+    elif sort_by == "status":
+
+        findings = sorted(
+            findings,
+            key=lambda finding: finding.get(
+                "status",
+                ""
+            )
+        )
+
+    elif sort_by == "finding_id":
+
+        findings = sorted(
+            findings,
+            key=lambda finding: finding.get(
+                "finding_id",
+                ""
+            )
+        )
+
+    else:
+
+        findings = sorted(
+            findings,
+            key=lambda finding: SEVERITY_RANK.get(
+                finding.get("severity"),
+                0
+            ),
+            reverse=True
+        )
 
     per_page = 10
 
@@ -210,5 +257,6 @@ def engagement_dashboard(
                 for finding in dashboard_context["findings"]
             )
         ),
+        selected_sort=sort_by,
         audit_events=dashboard_context["audit_events"],
     )

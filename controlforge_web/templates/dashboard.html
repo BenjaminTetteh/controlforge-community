@@ -160,10 +160,7 @@ ControlForge Dashboard
 <form method="get" class="filter-panel">
 
     <div class="filter-group">
-
-        <label for="search">
-            Search
-        </label>
+        <label for="search">Search</label>
 
         <input
             type="text"
@@ -172,81 +169,39 @@ ControlForge Dashboard
             value="{{ search_query }}"
             placeholder="Search findings..."
         >
-
     </div>
 
     <div class="filter-group">
+        <label for="severity">Severity</label>
 
-        <label for="severity">
-            Severity
-        </label>
+        <select name="severity" id="severity">
+            <option value="">All</option>
 
-        <select
-            name="severity"
-            id="severity"
-        >
-
-            <option value="">
-                All
-            </option>
-
-            <option
-                value="Critical"
-                {% if selected_severity == "Critical" %}
-                selected
-                {% endif %}
-            >
+            <option value="Critical" {% if selected_severity == "Critical" %}selected{% endif %}>
                 Critical
             </option>
 
-            <option
-                value="High"
-                {% if selected_severity == "High" %}
-                selected
-                {% endif %}
-            >
+            <option value="High" {% if selected_severity == "High" %}selected{% endif %}>
                 High
             </option>
 
-            <option
-                value="Medium"
-                {% if selected_severity == "Medium" %}
-                selected
-                {% endif %}
-            >
+            <option value="Medium" {% if selected_severity == "Medium" %}selected{% endif %}>
                 Medium
             </option>
 
-            <option
-                value="Low"
-                {% if selected_severity == "Low" %}
-                selected
-                {% endif %}
-            >
+            <option value="Low" {% if selected_severity == "Low" %}selected{% endif %}>
                 Low
             </option>
-
         </select>
-
     </div>
 
     <div class="filter-group">
+        <label for="owner">Owner</label>
 
-        <label for="owner">
-            Owner
-        </label>
-
-        <select
-            name="owner"
-            id="owner"
-        >
-
-            <option value="">
-                All
-            </option>
+        <select name="owner" id="owner">
+            <option value="">All</option>
 
             {% for owner in owners %}
-
             <option
                 value="{{ owner }}"
                 {% if selected_owner == owner %}
@@ -255,23 +210,53 @@ ControlForge Dashboard
             >
                 {{ owner }}
             </option>
-
             {% endfor %}
-
         </select>
-
     </div>
 
     <div class="filter-group">
+        <label for="sort">Sort By</label>
 
-        <button type="submit">
-            Apply Filters
-        </button>
+        <select name="sort" id="sort">
+            <option value="severity_desc" {% if selected_sort == "severity_desc" %}selected{% endif %}>
+                Highest Severity
+            </option>
 
+            <option value="severity_asc" {% if selected_sort == "severity_asc" %}selected{% endif %}>
+                Lowest Severity
+            </option>
+
+            <option value="finding_id" {% if selected_sort == "finding_id" %}selected{% endif %}>
+                Finding ID
+            </option>
+
+            <option value="owner" {% if selected_sort == "owner" %}selected{% endif %}>
+                Owner
+            </option>
+
+            <option value="status" {% if selected_sort == "status" %}selected{% endif %}>
+                Status
+            </option>
+        </select>
+    </div>
+
+    <div class="filter-group">
+        <div class="filter-actions">
+            <button type="submit">
+                Apply Filters
+            </button>
+
+            <a href="{{ url_for(
+                'dashboard.engagement_dashboard',
+                client_slug=request.view_args.client_slug,
+                engagement_slug=request.view_args.engagement_slug
+            ) }}">
+                Clear Filters
+            </a>
+        </div>
     </div>
 
 </form>
-
 
 
 <table>
