@@ -134,6 +134,22 @@ def engagement_dashboard(
             )
         ]
 
+    severity_rank = {
+        "Critical": 4,
+            "High": 3,
+            "Medium": 2,
+            "Low": 1
+        }        
+
+    findings = sorted(
+        findings = sorted(
+        findings,
+        key=lambda finding: severity_rank.get(
+            finding.get("severity"),
+            0
+        ),
+        reverse=True
+    )                     
 
     page = request.args.get(
         "page",
