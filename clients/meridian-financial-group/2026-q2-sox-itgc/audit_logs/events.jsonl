@@ -1,0 +1,9 @@
+{"timestamp": "2026-05-19 09:50:42", "action": "update_finding_status", "performed_by": "local-user", "details": {"finding_id": "FND-MFA-004", "old_status": "Closed", "new_status": "In Progress"}}
+{"timestamp": "2026-05-19 09:50:49", "action": "update_finding_status", "performed_by": "local-user", "details": {"finding_id": "FND-MFA-004", "old_status": "In Progress", "new_status": "Overdue"}}
+{"timestamp": "2026-05-19 09:51:01", "action": "update_finding_status", "performed_by": "local-user", "details": {"finding_id": "FND-MFA-004", "old_status": "Overdue", "new_status": "Open"}}
+{"timestamp": "2026-05-19 09:51:23", "action": "update_finding_status", "performed_by": "local-user", "details": {"finding_id": "FND-MFA-004", "old_status": "Open", "new_status": "Open"}}
+{"timestamp": "2026-05-19 09:52:46", "action": "update_finding_status", "performed_by": "local-user", "details": {"finding_id": "FND-MFA-004", "old_status": "Open", "new_status": "In Progress"}}
+{"timestamp": "2026-05-19 09:58:31", "action": "update_finding_status", "performed_by": "local-user", "details": {"finding_id": "FND-MFA-004", "old_status": "In Progress", "new_status": "Open"}}
+{"timestamp": "2026-05-19 10:00:08", "action": "update_finding_status", "performed_by": "local-user", "details": {"finding_id": "FND-MFA-004", "old_status": "Open", "new_status": "In Progress"}}
+{"timestamp": "2026-05-19 10:20:15", "action": "update_finding_status", "performed_by": "local-user", "details": {"finding_id": "FND-MFA-060", "old_status": "Open", "new_status": "Closed"}}
+{"timestamp": "2026-05-19 10:25:23", "action": "update_finding_status", "performed_by": "local-user", "details": {"finding_id": "FND-MFA-004", "old_status": "In Progress", "new_status": "Closed"}}
