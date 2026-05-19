@@ -16,6 +16,12 @@ dashboard_bp = Blueprint(
     url_prefix="/dashboard"
 )
 
+SEVERITY_RANK = {
+    "Critical": 4,
+    "High": 3,
+    "Medium": 2,
+    "Low": 1
+}
 
 def is_safe_slug(value: str) -> bool:
 
@@ -134,32 +140,24 @@ def engagement_dashboard(
             )
         ]
 
-    severity_rank = {
-        "Critical": 4,
-            "High": 3,
-            "Medium": 2,
-            "Low": 1
-        }        
-
     findings = sorted(
-        findings = sorted(
         findings,
-        key=lambda finding: severity_rank.get(
+        key=lambda finding: SEVERITY_RANK.get(
             finding.get("severity"),
             0
         ),
         reverse=True
-    )                     
+    )
+
+    per_page = 10
+
+    total_findings = len(findings)
 
     page = request.args.get(
         "page",
         1,
         type=int
     )
-
-    per_page = 10
-
-    total_findings = len(findings)
 
     start = (
         page - 1
