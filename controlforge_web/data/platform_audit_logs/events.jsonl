@@ -1,0 +1,4 @@
+{"timestamp": "2026-05-19 23:41:12", "action": "login_failure", "performed_by": "auditor ", "details": {"reason": "invalid_credentials"}}
+{"timestamp": "2026-05-19 23:41:25", "action": "login_success", "performed_by": "auditor", "details": {"role": "Auditor"}}
+{"timestamp": "2026-05-19 23:41:41", "action": "logout", "performed_by": "auditor", "details": {"role": "Auditor"}}
+{"timestamp": "2026-05-19 23:43:38", "action": "login_failure", "performed_by": "manager", "details": {"reason": "invalid_credentials"}}
