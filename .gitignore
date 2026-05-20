@@ -15,4 +15,5 @@ controlforge_web/data/controlforge.db
 controlforge_web/data/platform_audit_logs/
 controlforge_web/data/security/
 
+clients/*/*/audit_logs/
 *.db
