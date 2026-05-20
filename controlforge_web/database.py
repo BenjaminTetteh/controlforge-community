@@ -72,6 +72,24 @@ def initialize_database():
         """
     )
 
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS findings (
+            finding_id TEXT PRIMARY KEY,
+            client_slug TEXT NOT NULL,
+            engagement_slug TEXT NOT NULL,
+            severity TEXT NOT NULL,
+            control_name TEXT,
+            affected_user TEXT,
+            source_system TEXT,
+            status TEXT,
+            remediation_owner TEXT,
+            issue_description TEXT,
+            raw_details TEXT
+        )
+        """
+    )
+
     connection.commit()
 
     connection.close()

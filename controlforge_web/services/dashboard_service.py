@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from controlforge.analytics.findings_loader import (
-    load_saved_findings
+from controlforge.repositories.findings_repository import (
+    load_findings_for_engagement
 )
 
 from controlforge.context.engagement_loader import (
@@ -54,8 +54,9 @@ def build_dashboard_context(
         )
     )
 
-    findings = load_saved_findings(
-        findings_path
+    findings = load_findings_for_engagement(
+        client_slug=client_slug,
+        engagement_slug=engagement_slug
     )
 
     open_findings = len([

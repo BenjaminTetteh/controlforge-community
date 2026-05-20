@@ -1,4 +1,3 @@
-import json
 import re
 from pathlib import Path
 
@@ -11,10 +10,6 @@ from flask import (
     url_for
 )
 
-from controlforge.analytics.findings_loader import (
-    load_saved_findings
-)
-
 from controlforge.audit.audit_logger import (
     write_audit_event
 )
@@ -24,6 +19,18 @@ from flask_login import login_required
 from controlforge_web.auth.permissions import (
     roles_required
 )
+
+from controlforge.repositories.findings_repository import (
+    update_finding_status as update_finding_status_record
+)
+
+from flask_login import current_user
+
+from controlforge.repositories.findings_repository import (
+    load_findings_for_engagement,
+    update_finding_status as update_finding_status_record
+)
+
 
 findings_bp = Blueprint(
     "findings",
@@ -127,8 +134,9 @@ def finding_detail(
     if not engagement_path.exists():
         abort(404)
 
-    findings = load_saved_findings(
-        engagement_path / "findings"
+    findings = load_findings_for_engagement(
+        client_slug=client_slug,
+        engagement_slug=engagement_slug
     )
 
     finding = get_finding_or_404(
@@ -174,8 +182,9 @@ def update_finding_status(
         / "findings"
     )
 
-    findings = load_saved_findings(
-        findings_path
+    findings = load_findings_for_engagement(
+        client_slug=client_slug,
+        engagement_slug=engagement_slug
     )
 
     finding = get_finding_or_404(
@@ -196,24 +205,17 @@ def update_finding_status(
 
     if old_status != new_status:
 
-        finding["status"] = new_status
-
-        findings_file = (
-            findings_path
-            / "findings.json"
+        update_finding_status_record(
+            client_slug=client_slug,
+            engagement_slug=engagement_slug,
+            finding_id=finding_id,
+            new_status=new_status
         )
-
-        with open(findings_file, "w") as file:
-            json.dump(
-                findings,
-                file,
-                indent=2
-            )
 
         write_audit_event(
             engagement_path=engagement_path,
             action="update_finding_status",
-            performed_by="local-user",
+            performed_by=current_user.username,
             details={
                 "finding_id": finding_id,
                 "old_status": old_status,
