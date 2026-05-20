@@ -157,9 +157,8 @@ def build_dashboard_context(
             owner_summary[owner]["overdue"] += 1
 
     audit_events = load_audit_events(
-        engagement_path
-        / "audit_logs"
-        / "events.jsonl"
+        client_slug=client_slug,
+        engagement_slug=engagement_slug
     )
 
     return {

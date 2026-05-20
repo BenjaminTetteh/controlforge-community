@@ -9,3 +9,10 @@ data/normalized/
 .env
 .env.local
 
+controlforge_web/data/users.json
+controlforge_web/data/users.json.bak
+controlforge_web/data/controlforge.db
+controlforge_web/data/platform_audit_logs/
+controlforge_web/data/security/
+
+*.db

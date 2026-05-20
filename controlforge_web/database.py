@@ -46,6 +46,32 @@ def initialize_database():
         """
     )
 
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS platform_audit_events (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            timestamp TEXT NOT NULL,
+            action TEXT NOT NULL,
+            performed_by TEXT NOT NULL,
+            details TEXT NOT NULL
+        )
+        """
+    )
+
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS engagement_audit_events (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            client_slug TEXT NOT NULL,
+            engagement_slug TEXT NOT NULL,
+            timestamp TEXT NOT NULL,
+            action TEXT NOT NULL,
+            performed_by TEXT NOT NULL,
+            details TEXT NOT NULL
+        )
+        """
+    )
+
     connection.commit()
 
     connection.close()

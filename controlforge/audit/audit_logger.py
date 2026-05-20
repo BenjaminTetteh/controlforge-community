@@ -1,6 +1,10 @@
 import json
 from datetime import datetime
 
+from controlforge_web.database import (
+    get_db_connection
+)
+
 
 def write_audit_event(
     engagement_path,
@@ -9,27 +13,34 @@ def write_audit_event(
     details: dict
 ):
 
-    audit_dir = engagement_path / "audit_logs"
+    client_slug = engagement_path.parts[-2]
+    engagement_slug = engagement_path.parts[-1]
 
-    audit_dir.mkdir(
-        exist_ok=True
+    connection = get_db_connection()
+
+    connection.execute(
+        """
+        INSERT INTO engagement_audit_events (
+            client_slug,
+            engagement_slug,
+            timestamp,
+            action,
+            performed_by,
+            details
+        )
+        VALUES (?, ?, ?, ?, ?, ?)
+        """,
+        (
+            client_slug,
+            engagement_slug,
+            datetime.now().strftime(
+                "%Y-%m-%d %H:%M:%S"
+            ),
+            action,
+            performed_by,
+            json.dumps(details)
+        )
     )
 
-    audit_file = audit_dir / "events.jsonl"
-
-    event = {
-        "timestamp": datetime.now().strftime(
-            "%Y-%m-%d %H:%M:%S"
-        ),
-        "action": action,
-        "performed_by": performed_by,
-        "details": details
-    }
-
-    with open(audit_file, "a") as file:
-        file.write(
-            json.dumps(event)
-            + "\n"
-        )
-
-    return event
+    connection.commit()
+    connection.close()

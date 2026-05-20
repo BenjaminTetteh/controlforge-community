@@ -1,38 +1,44 @@
 import json
-from pathlib import Path
 
-
-PLATFORM_AUDIT_FILE = (
-    Path("controlforge_web")
-    / "data"
-    / "platform_audit_logs"
-    / "events.jsonl"
+from controlforge_web.database import (
+    get_db_connection
 )
 
 
 def load_platform_audit_events():
 
-    if not PLATFORM_AUDIT_FILE.exists():
-        return []
+    connection = get_db_connection()
+
+    rows = connection.execute(
+        """
+        SELECT
+            id,
+            timestamp,
+            action,
+            performed_by,
+            details
+        FROM platform_audit_events
+        ORDER BY id DESC
+        LIMIT 100
+        """
+    ).fetchall()
+
+    connection.close()
 
     events = []
 
-    with open(
-        PLATFORM_AUDIT_FILE,
-        "r"
-    ) as file:
+    for row in rows:
 
-        for line in file:
+        events.append(
+            {
+                "id": row["id"],
+                "timestamp": row["timestamp"],
+                "action": row["action"],
+                "performed_by": row["performed_by"],
+                "details": json.loads(
+                    row["details"]
+                )
+            }
+        )
 
-            line = line.strip()
-
-            if not line:
-                continue
-
-            events.append(
-                json.loads(line)
-            )
-
-    return list(
-        reversed(events)
-    )
+    return events

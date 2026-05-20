@@ -103,7 +103,7 @@
       "SOC2 CC6.2",
       "ISO27001 A.5.18"
     ],
-    "status": "Overdue",
+    "status": "Closed",
     "remediation_owner": "Unassigned",
     "remediation_status": "Pending",
     "remediation_evidence": "",
