@@ -41,6 +41,12 @@
 
             <span> | </span>
 
+            <a href="{{ url_for('platform.locked_accounts') }}">
+                Locked Accounts
+            </a>
+
+            <span> | </span>
+
             <span>
                 Logged in as
                 {{ current_user.username }}

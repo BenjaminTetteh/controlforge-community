@@ -72,3 +72,29 @@ def is_account_locked(username):
     )
 
     return attempts >= MAX_FAILED_ATTEMPTS
+
+
+def get_locked_accounts():
+
+    data = load_failed_attempts()
+
+    return [
+        {
+            "username": username,
+            "failed_attempts": attempts
+        }
+        for username, attempts in data.items()
+        if attempts >= MAX_FAILED_ATTEMPTS
+    ]
+
+
+def unlock_account(username):
+
+    data = load_failed_attempts()
+
+    if username in data:
+        del data[username]
+
+    save_failed_attempts(
+        data
+    )

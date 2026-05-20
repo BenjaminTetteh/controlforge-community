@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}
+Locked Accounts
+{% endblock %}
+
+{% block content %}
+
+<h2>Locked Accounts</h2>
+
+<p>
+    This page allows Managers to unlock accounts locked due to repeated failed login attempts.
+</p>
+
+<table>
+    <thead>
+        <tr>
+            <th>Username</th>
+            <th>Failed Attempts</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% if locked_accounts %}
+            {% for account in locked_accounts %}
+            <tr>
+                <td>{{ account.username }}</td>
+                <td>{{ account.failed_attempts }}</td>
+                <td>
+                    <form method="post">
+                        <input
+                            type="hidden"
+                            name="csrf_token"
+                            value="{{ csrf_token() }}"
+                        >
+
+                        <input
+                            type="hidden"
+                            name="username"
+                            value="{{ account.username }}"
+                        >
+
+                        <button type="submit">
+                            Unlock
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="3">
+                    No locked accounts.
+                </td>
+            </tr>
+        {% endif %}
+    </tbody>
+</table>
+
+{% endblock %}

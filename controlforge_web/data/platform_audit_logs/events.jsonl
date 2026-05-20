@@ -17,3 +17,13 @@
 {"timestamp": "2026-05-20 10:07:45", "action": "login_failure", "performed_by": "auditor", "details": {"reason": "invalid_credentials", "failed_attempts": 4}}
 {"timestamp": "2026-05-20 10:07:53", "action": "login_failure", "performed_by": "auditor", "details": {"reason": "invalid_credentials", "failed_attempts": 5}}
 {"timestamp": "2026-05-20 10:08:01", "action": "login_blocked_account_locked", "performed_by": "auditor", "details": {"reason": "too_many_failed_attempts"}}
+{"timestamp": "2026-05-20 10:13:18", "action": "login_success", "performed_by": "manager", "details": {"role": "Manager"}}
+{"timestamp": "2026-05-20 11:29:39", "action": "logout", "performed_by": "manager", "details": {"role": "Manager"}}
+{"timestamp": "2026-05-20 11:29:51", "action": "login_failure", "performed_by": "viewer", "details": {"reason": "invalid_credentials", "failed_attempts": 1}}
+{"timestamp": "2026-05-20 11:29:55", "action": "login_failure", "performed_by": "viewer", "details": {"reason": "invalid_credentials", "failed_attempts": 2}}
+{"timestamp": "2026-05-20 11:30:01", "action": "login_failure", "performed_by": "viewer", "details": {"reason": "invalid_credentials", "failed_attempts": 3}}
+{"timestamp": "2026-05-20 11:30:05", "action": "login_failure", "performed_by": "viewer", "details": {"reason": "invalid_credentials", "failed_attempts": 4}}
+{"timestamp": "2026-05-20 11:30:09", "action": "login_failure", "performed_by": "viewer", "details": {"reason": "invalid_credentials", "failed_attempts": 5}}
+{"timestamp": "2026-05-20 11:30:13", "action": "login_blocked_account_locked", "performed_by": "viewer", "details": {"reason": "too_many_failed_attempts"}}
+{"timestamp": "2026-05-20 11:30:22", "action": "login_success", "performed_by": "manager", "details": {"role": "Manager"}}
+{"timestamp": "2026-05-20 11:30:44", "action": "account_unlocked", "performed_by": "manager", "details": {"unlocked_account": "viewer"}}
