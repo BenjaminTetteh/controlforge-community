@@ -22,6 +22,9 @@ from datetime import timedelta
 
 from flask import session
 from flask_login import current_user
+from controlforge_web.database import (
+    initialize_database
+)
 
 
 csrf = CSRFProtect()
@@ -36,6 +39,8 @@ def create_app():
         template_folder="templates",
         static_folder="static"
     )
+
+    initialize_database()
 
     app.config.from_object(
         Config
@@ -78,7 +83,7 @@ def create_app():
 
         if current_user.is_authenticated:
             session.modified = True
-            
+
 
     return app
 

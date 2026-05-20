@@ -1,100 +1,137 @@
-import json
-from pathlib import Path
-
-
-TRACKER_FILE = (
-    Path("controlforge_web")
-    / "data"
-    / "security"
-    / "failed_login_tracker.json"
+from controlforge_web.database import (
+    get_db_connection
 )
 
 
 MAX_FAILED_ATTEMPTS = 5
 
 
-def load_failed_attempts():
-
-    if not TRACKER_FILE.exists():
-        return {}
-
-    with open(TRACKER_FILE, "r") as file:
-        return json.load(file)
-
-
-def save_failed_attempts(data):
-
-    with open(TRACKER_FILE, "w") as file:
-        json.dump(
-            data,
-            file,
-            indent=2
-        )
-
-
 def increment_failed_attempt(username):
 
-    data = load_failed_attempts()
+    connection = get_db_connection()
 
-    current = data.get(
-        username,
-        0
-    )
+    existing = connection.execute(
+        """
+        SELECT failed_attempts
+        FROM failed_login_attempts
+        WHERE username = ?
+        """,
+        (username,)
+    ).fetchone()
 
-    data[username] = current + 1
+    if existing:
 
-    save_failed_attempts(
-        data
-    )
+        new_count = (
+            existing["failed_attempts"]
+            + 1
+        )
 
-    return data[username]
+        connection.execute(
+            """
+            UPDATE failed_login_attempts
+            SET failed_attempts = ?
+            WHERE username = ?
+            """,
+            (
+                new_count,
+                username
+            )
+        )
+
+    else:
+
+        new_count = 1
+
+        connection.execute(
+            """
+            INSERT INTO failed_login_attempts (
+                username,
+                failed_attempts
+            )
+            VALUES (?, ?)
+            """,
+            (
+                username,
+                new_count
+            )
+        )
+
+    connection.commit()
+
+    connection.close()
+
+    return new_count
 
 
 def reset_failed_attempts(username):
 
-    data = load_failed_attempts()
+    connection = get_db_connection()
 
-    if username in data:
-        del data[username]
-
-    save_failed_attempts(
-        data
+    connection.execute(
+        """
+        DELETE FROM failed_login_attempts
+        WHERE username = ?
+        """,
+        (username,)
     )
+
+    connection.commit()
+
+    connection.close()
 
 
 def is_account_locked(username):
 
-    data = load_failed_attempts()
+    connection = get_db_connection()
 
-    attempts = data.get(
-        username,
-        0
+    row = connection.execute(
+        """
+        SELECT failed_attempts
+        FROM failed_login_attempts
+        WHERE username = ?
+        """,
+        (username,)
+    ).fetchone()
+
+    connection.close()
+
+    if not row:
+        return False
+
+    return (
+        row["failed_attempts"]
+        >= MAX_FAILED_ATTEMPTS
     )
-
-    return attempts >= MAX_FAILED_ATTEMPTS
 
 
 def get_locked_accounts():
 
-    data = load_failed_attempts()
+    connection = get_db_connection()
+
+    rows = connection.execute(
+        """
+        SELECT
+            username,
+            failed_attempts
+        FROM failed_login_attempts
+        WHERE failed_attempts >= ?
+        """,
+        (MAX_FAILED_ATTEMPTS,)
+    ).fetchall()
+
+    connection.close()
 
     return [
         {
-            "username": username,
-            "failed_attempts": attempts
+            "username": row["username"],
+            "failed_attempts": row["failed_attempts"]
         }
-        for username, attempts in data.items()
-        if attempts >= MAX_FAILED_ATTEMPTS
+        for row in rows
     ]
 
 
 def unlock_account(username):
 
-    data = load_failed_attempts()
-
-    if username in data:
-        del data[username]
-
-    save_failed_attempts(
-        data
+    reset_failed_attempts(
+        username
     )

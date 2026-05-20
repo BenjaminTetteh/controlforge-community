@@ -1,13 +1,7 @@
-import json
-from pathlib import Path
-
 from flask_login import UserMixin
 
-
-USERS_FILE = (
-    Path("controlforge_web")
-    / "data"
-    / "users.json"
+from controlforge_web.database import (
+    get_db_connection
 )
 
 
@@ -26,44 +20,62 @@ class User(UserMixin):
         self.role = role
 
 
-def load_users():
+def row_to_user(row):
 
-    if not USERS_FILE.exists():
-        return []
+    if row is None:
+        return None
 
-    with open(USERS_FILE, "r") as file:
-        data = json.load(file)
-
-    return [
-        User(
-            user_data["id"],
-            user_data["username"],
-            user_data["password_hash"],
-            user_data["role"]
-        )
-        for user_data in data
-    ]
+    return User(
+        row["id"],
+        row["username"],
+        row["password_hash"],
+        row["role"]
+    )
 
 
 def get_user_by_id(user_id):
 
-    users = load_users()
+    connection = get_db_connection()
 
-    for user in users:
+    user_row = connection.execute(
+        """
+        SELECT
+            id,
+            username,
+            password_hash,
+            role
+        FROM users
+        WHERE id = ?
+        """,
+        (user_id,)
+    ).fetchone()
 
-        if user.id == user_id:
-            return user
+    connection.close()
 
-    return None
+    return row_to_user(
+        user_row
+    )
 
 
 def get_user_by_username(username):
 
-    users = load_users()
+    connection = get_db_connection()
 
-    for user in users:
+    user_row = connection.execute(
+        """
+        SELECT
+            id,
+            username,
+            password_hash,
+            role
+        FROM users
+        WHERE username = ?
+        """,
+        (username,)
+    ).fetchone()
 
-        if user.username == username:
-            return user
+    connection.close()
 
-    return None
+    return row_to_user(
+        user_row
+    )
