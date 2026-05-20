@@ -16,6 +16,8 @@ from controlforge_web.auth.user import (
 
 from controlforge_web.auth import auth_bp
 
+from controlforge_web.platform import platform_bp
+
 
 csrf = CSRFProtect()
 
@@ -39,6 +41,10 @@ def create_app():
 
     app.register_blueprint(
         auth_bp
+    )
+
+    app.register_blueprint(
+        platform_bp
     )
     
     @login_manager.user_loader

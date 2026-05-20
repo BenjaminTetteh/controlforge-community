@@ -2,3 +2,11 @@
 {"timestamp": "2026-05-19 23:41:25", "action": "login_success", "performed_by": "auditor", "details": {"role": "Auditor"}}
 {"timestamp": "2026-05-19 23:41:41", "action": "logout", "performed_by": "auditor", "details": {"role": "Auditor"}}
 {"timestamp": "2026-05-19 23:43:38", "action": "login_failure", "performed_by": "manager", "details": {"reason": "invalid_credentials"}}
+{"timestamp": "2026-05-20 00:20:43", "action": "login_failure", "performed_by": "manager", "details": {"reason": "invalid_credentials"}}
+{"timestamp": "2026-05-20 00:22:28", "action": "login_success", "performed_by": "manager", "details": {"role": "Manager"}}
+{"timestamp": "2026-05-20 00:25:54", "action": "logout", "performed_by": "manager", "details": {"role": "Manager"}}
+{"timestamp": "2026-05-20 00:26:05", "action": "login_success", "performed_by": "auditor", "details": {"role": "Auditor"}}
+{"timestamp": "2026-05-20 00:27:32", "action": "logout", "performed_by": "auditor", "details": {"role": "Auditor"}}
+{"timestamp": "2026-05-20 00:27:43", "action": "login_success", "performed_by": "viewer", "details": {"role": "Viewer"}}
+{"timestamp": "2026-05-20 00:33:03", "action": "logout", "performed_by": "viewer", "details": {"role": "Viewer"}}
+{"timestamp": "2026-05-20 00:33:18", "action": "login_success", "performed_by": "auditor", "details": {"role": "Auditor"}}

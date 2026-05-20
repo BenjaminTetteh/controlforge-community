@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}
+Platform Security Activity
+{% endblock %}
+
+{% block content %}
+
+<h2>Platform Security Activity</h2>
+
+<p>
+    This page shows recent authentication and platform security events.
+</p>
+
+<table>
+    <thead>
+        <tr>
+            <th>Timestamp</th>
+            <th>Action</th>
+            <th>Performed By</th>
+            <th>Details</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% if events %}
+            {% for event in events %}
+            <tr>
+                <td>{{ event.timestamp }}</td>
+                <td>{{ event.action }}</td>
+                <td>{{ event.performed_by }}</td>
+                <td>{{ event.details }}</td>
+            </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="4">
+                    No platform security events available.
+                </td>
+            </tr>
+        {% endif %}
+    </tbody>
+</table>
+
+{% endblock %}
