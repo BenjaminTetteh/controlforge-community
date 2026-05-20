@@ -29,6 +29,12 @@ from controlforge.audit.platform_audit_logger import (
 
 from flask_login import current_user
 
+from controlforge_web.auth.security import (
+    increment_failed_attempt,
+    is_account_locked,
+    reset_failed_attempts
+)
+
 
 auth_bp = Blueprint(
     "auth",
@@ -51,6 +57,23 @@ def login():
             "username",
             ""
         ).strip()
+
+        if is_account_locked(username):
+
+            write_platform_audit_event(
+                action="login_blocked_account_locked",
+                performed_by=username,
+                details={
+                    "reason": "too_many_failed_attempts"
+                }
+            )
+
+            error = "Account is locked due to too many failed login attempts."
+
+            return render_template(
+                "login.html",
+                error=error
+            )
 
         password = request.form.get(
             "password"
@@ -75,6 +98,10 @@ def login():
                 }
             )
 
+            reset_failed_attempts(
+                username
+            )
+
             login_user(
                 user
             )
@@ -85,13 +112,20 @@ def login():
                 )
             )
 
+        failed_attempts = increment_failed_attempt(
+            username
+        )
+
         write_platform_audit_event(
             action="login_failure",
             performed_by=username or "unknown",
             details={
-                "reason": "invalid_credentials"
+                "reason": "invalid_credentials",
+                "failed_attempts": failed_attempts
             }
         )
+
+        error = "Invalid username or password."
 
         error = (
             "Invalid username or password."
