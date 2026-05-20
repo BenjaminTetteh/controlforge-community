@@ -7,6 +7,8 @@ from flask import (
 )
 
 from flask_login import (
+    current_user,
+    login_required,
     login_user,
     logout_user
 )
@@ -34,6 +36,8 @@ from controlforge_web.auth.security import (
     is_account_locked,
     reset_failed_attempts
 )
+
+from flask import session
 
 
 auth_bp = Blueprint(
@@ -102,6 +106,8 @@ def login():
                 username
             )
 
+            session.permanent = True
+
             login_user(
                 user
             )
@@ -140,13 +146,17 @@ def login():
 @auth_bp.route(
     "/logout"
 )
+@login_required
 def logout():
+
+    username = current_user.username
+    role = current_user.role
 
     write_platform_audit_event(
         action="logout",
-        performed_by=current_user.username,
+        performed_by=username,
         details={
-            "role": current_user.role
+            "role": role
         }
     )
 

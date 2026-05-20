@@ -18,6 +18,11 @@ from controlforge_web.auth import auth_bp
 
 from controlforge_web.platform import platform_bp
 
+from datetime import timedelta
+
+from flask import session
+from flask_login import current_user
+
 
 csrf = CSRFProtect()
 
@@ -34,6 +39,10 @@ def create_app():
 
     app.config.from_object(
         Config
+    )
+
+    app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(
+        minutes=15
     )
 
     csrf.init_app(app)
@@ -64,7 +73,12 @@ def create_app():
         findings_bp
     )
 
-    
+    @app.before_request
+    def refresh_session():
+
+        if current_user.is_authenticated:
+            session.modified = True
+            
 
     return app
 
