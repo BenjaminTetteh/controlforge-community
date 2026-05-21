@@ -249,6 +249,7 @@ Finding Detail
             <th>Uploaded At</th>
             <th>Size</th>
             <th>SHA-256 Hash</th>
+            <th>Action</th>
         </tr>
     </thead>
 
@@ -261,11 +262,23 @@ Finding Detail
                 <td>{{ evidence.upload_timestamp }}</td>
                 <td>{{ evidence.file_size }} bytes</td>
                 <td>{{ evidence.file_hash }}</td>
+                
+                <td>
+                    <a href="{{ url_for(
+                        'findings.download_evidence',
+                        client_slug=request.view_args.client_slug,
+                        engagement_slug=request.view_args.engagement_slug,
+                        finding_id=finding.finding_id,
+                        evidence_id=evidence.id
+                    ) }}">
+                        Download
+                    </a>
+                </td>
             </tr>
             {% endfor %}
         {% else %}
             <tr>
-                <td colspan="5">
+                <td colspan="6">
                     No evidence uploaded for this finding.
                 </td>
             </tr>

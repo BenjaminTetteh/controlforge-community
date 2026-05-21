@@ -32,6 +32,9 @@ from controlforge.governance.workflow import (
 from controlforge.repositories.evidence_query_repository import (
     load_evidence_for_finding
 )
+from flask import send_from_directory
+from flask import send_file
+
 
 
 
@@ -501,4 +504,105 @@ def assign_finding_roles(
             engagement_slug=engagement_slug,
             finding_id=finding_id
         )
+    )
+
+
+@findings_bp.route(
+    "/<client_slug>/<engagement_slug>/<finding_id>/evidence/<int:evidence_id>/download"
+)
+@login_required
+def download_evidence(
+    client_slug,
+    engagement_slug,
+    finding_id,
+    evidence_id
+):
+
+    findings = load_findings_for_engagement(
+        client_slug=client_slug,
+        engagement_slug=engagement_slug
+    )
+
+    finding = get_finding_or_404(
+        findings,
+        finding_id
+    )
+
+    evidence_files = load_evidence_for_finding(
+        finding_id=finding_id
+    )
+
+    evidence = next(
+        (
+            item
+            for item in evidence_files
+            if item["id"] == evidence_id
+        ),
+        None
+    )
+
+    if not evidence:
+        abort(404)
+
+    authorized = (
+        current_user.role == "Manager"
+        or current_user.username
+            == finding.get(
+                "remediation_owner"
+            )
+        or current_user.username
+            == finding.get(
+                "assigned_auditor"
+            )
+        or current_user.username
+            == finding.get(
+                "closure_approver"
+            )
+    )
+
+    if not authorized:
+        abort(403)
+
+    engagement_path = (
+        Path("clients")
+        / client_slug
+        / engagement_slug
+    )
+
+    evidence_directory = (
+        Path("evidence")
+        / client_slug
+        / engagement_slug
+    )
+
+    write_audit_event(
+        engagement_path=engagement_path,
+        action="download_evidence",
+        performed_by=current_user.username,
+        details={
+            "finding_id": finding_id,
+            "evidence_id": evidence_id,
+            "filename": evidence[
+                "original_filename"
+            ]
+        }
+    )
+
+    file_path = evidence_directory / evidence["stored_filename"]
+
+    if not file_path.exists():
+        abort(404)
+
+    file_path = (
+        evidence_directory
+        / evidence["stored_filename"]
+    ).resolve()
+
+    if not file_path.exists():
+        abort(404)
+
+    return send_file(
+        file_path,
+        as_attachment=True,
+        download_name=evidence["original_filename"]
     )
