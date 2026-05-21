@@ -16,9 +16,6 @@ from flask_login import login_required
 from controlforge_web.auth.permissions import (
     roles_required
 )
-from controlforge.repositories.findings_repository import (
-    update_finding_status as update_finding_status_record
-)
 from flask_login import current_user
 from controlforge.repositories.findings_repository import (
     load_findings_for_engagement,
@@ -28,12 +25,13 @@ from controlforge.repositories.findings_repository import (
 from controlforge.evidence.upload_service import (
     process_evidence_upload
 )
-
 from controlforge.governance.workflow import (
     FINDING_STATUSES,
     is_valid_transition
 )
-
+from controlforge.repositories.evidence_query_repository import (
+    load_evidence_for_finding
+)
 
 
 
@@ -136,6 +134,10 @@ def finding_detail(
         engagement_slug=engagement_slug
     )
 
+    evidence_files = load_evidence_for_finding(
+        finding_id=finding_id
+    )
+
     finding = get_finding_or_404(
         findings,
         finding_id
@@ -144,7 +146,8 @@ def finding_detail(
     return render_template(
         "finding_detail.html",
         finding=finding,
-        allowed_statuses=FINDING_STATUSES
+        allowed_statuses=FINDING_STATUSES,
+        evidence_files=evidence_files
     )
 
 
@@ -189,6 +192,24 @@ def update_finding_status(
         finding_id
     )
 
+    remediation_owner = (
+        finding.get(
+            "remediation_owner"
+        ) or ""
+    ).strip()
+
+    assigned_auditor = (
+        finding.get(
+            "assigned_auditor"
+        ) or ""
+    ).strip()
+
+    closure_approver = (
+        finding.get(
+            "closure_approver"
+        ) or ""
+    ).strip()   
+
     new_status = request.form.get(
         "status"
     )
@@ -197,11 +218,49 @@ def update_finding_status(
 
         abort(400)
 
-    
-
     old_status = finding.get(
         "status"
     )
+
+    if (
+        old_status == "Awaiting Remediation"
+        and new_status == "Remediation Submitted"
+    ):
+
+        if current_user.username != remediation_owner:
+            abort(403)
+
+
+    if (
+        old_status == "Remediation Submitted"
+        and new_status == "Under Auditor Review"
+    ):
+
+        if current_user.username != assigned_auditor:
+            abort(403)
+
+
+    if (
+        old_status == "Under Auditor Review"
+        and new_status == "Rejected"
+    ):
+
+        if current_user.username != assigned_auditor:
+            abort(403)
+
+
+    if (
+        old_status == "Under Auditor Review"
+        and new_status == "Closed"
+    ):
+
+        allowed_closer = (
+            current_user.username == closure_approver
+            or current_user.role == "Manager"
+        )
+
+        if not allowed_closer:
+            abort(403)
 
     if not is_valid_transition(
         old_status,
@@ -262,6 +321,36 @@ def upload_evidence(
     engagement_slug,
     finding_id
 ):
+
+    findings = load_findings_for_engagement(
+        client_slug=client_slug,
+        engagement_slug=engagement_slug
+    )
+
+    finding = next(
+        (
+            item
+            for item in findings
+            if item["finding_id"] == finding_id
+        ),
+        None
+    )
+
+    if not finding:
+        abort(404)
+
+    remediation_owner = (
+        finding.get(
+            "remediation_owner"
+        ) or ""
+    ).strip()
+
+    if (
+        remediation_owner
+        != current_user.username
+    ):
+
+        abort(403)
 
     uploaded_files = request.files.getlist(
         "evidence_files"

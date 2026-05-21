@@ -9,7 +9,6 @@ Finding Detail
 <h2>Finding Detail</h2>
 
 <table>
-
     <tr>
         <th>Finding ID</th>
         <td>{{ finding.finding_id }}</td>
@@ -49,8 +48,8 @@ Finding Detail
     </tr>
 
     <tr>
-        <th>Owner</th>
-        <td>{{ finding.remediation_owner }}</td>
+        <th>Remediation Owner</th>
+        <td>{{ finding.remediation_owner or "Unassigned" }}</td>
     </tr>
 
     <tr>
@@ -67,11 +66,7 @@ Finding Detail
         <th>Issue Description</th>
         <td>{{ finding.issue_description }}</td>
     </tr>
-
 </table>
-
-
-{% if current_user.role in ["Auditor", "Manager"] %}
 
 
 {% if current_user.role == "Manager" %}
@@ -87,12 +82,7 @@ Finding Detail
         finding_id=finding.finding_id
     ) }}"
 >
-
-    <input
-        type="hidden"
-        name="csrf_token"
-        value="{{ csrf_token() }}"
-    >
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
     <label for="remediation_owner">
         Remediation Owner
@@ -136,13 +126,20 @@ Finding Detail
     <button type="submit">
         Update Assignments
     </button>
-
 </form>
 
 {% endif %}
 
 
-<h3>Update Finding Status</h3>
+{% set current_status = finding.status %}
+{% set is_remediation_owner = current_user.username == finding.remediation_owner %}
+{% set is_assigned_auditor = current_user.username == finding.assigned_auditor %}
+{% set is_closure_approver = current_user.username == finding.closure_approver %}
+
+
+<h3>Workflow Action</h3>
+
+{% if current_status == "Open" and current_user.role == "Manager" %}
 
 <form method="post"
       action="{{ url_for(
@@ -152,54 +149,132 @@ Finding Detail
         finding_id=finding.finding_id
       ) }}">
 
-    <input
-        type="hidden"
-        name="csrf_token"
-        value="{{ csrf_token() }}"
-    >
-
-    <label for="status">
-        New Status
-    </label>
-
-    <select
-        name="status"
-        id="status"
-    >
-
-        {% for status in allowed_statuses %}
-
-        <option
-            value="{{ status }}"
-            {% if finding.status == status %}
-            selected
-            {% endif %}
-        >
-            {{ status }}
-        </option>
-
-        {% endfor %}
-
-    </select>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="status" value="Awaiting Remediation">
 
     <button type="submit">
-        Update Status
+        Initiate Remediation Workflow
     </button>
+</form>
 
+{% elif current_status == "Awaiting Remediation" and is_remediation_owner %}
+
+<form method="post"
+      action="{{ url_for(
+        'findings.update_finding_status',
+        client_slug=request.view_args.client_slug,
+        engagement_slug=request.view_args.engagement_slug,
+        finding_id=finding.finding_id
+      ) }}">
+
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="status" value="Remediation Submitted">
+
+    <button type="submit">
+        Submit Remediation for Review
+    </button>
+</form>
+
+{% elif current_status == "Remediation Submitted" and is_assigned_auditor %}
+
+<form method="post"
+      action="{{ url_for(
+        'findings.update_finding_status',
+        client_slug=request.view_args.client_slug,
+        engagement_slug=request.view_args.engagement_slug,
+        finding_id=finding.finding_id
+      ) }}">
+
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="status" value="Under Auditor Review">
+
+    <button type="submit">
+        Start Auditor Review
+    </button>
+</form>
+
+{% elif current_status == "Under Auditor Review" and is_assigned_auditor %}
+
+<form method="post"
+      action="{{ url_for(
+        'findings.update_finding_status',
+        client_slug=request.view_args.client_slug,
+        engagement_slug=request.view_args.engagement_slug,
+        finding_id=finding.finding_id
+      ) }}">
+
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="status" value="Rejected">
+
+    <button type="submit">
+        Reject Remediation
+    </button>
+</form>
+
+{% elif current_status == "Under Auditor Review" and (is_closure_approver or current_user.role == "Manager") %}
+
+<form method="post"
+      action="{{ url_for(
+        'findings.update_finding_status',
+        client_slug=request.view_args.client_slug,
+        engagement_slug=request.view_args.engagement_slug,
+        finding_id=finding.finding_id
+      ) }}">
+
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="status" value="Closed">
+
+    <button type="submit">
+        Close Finding
+    </button>
 </form>
 
 {% else %}
 
 <p>
-    You have read-only access to this finding.
+    No workflow action is currently available for your role,
+    assignment, or the current finding status.
 </p>
 
 {% endif %}
 
 
+<h3>Uploaded Evidence</h3>
+
+<table>
+    <thead>
+        <tr>
+            <th>Filename</th>
+            <th>Uploaded By</th>
+            <th>Uploaded At</th>
+            <th>Size</th>
+            <th>SHA-256 Hash</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% if evidence_files %}
+            {% for evidence in evidence_files %}
+            <tr>
+                <td>{{ evidence.original_filename }}</td>
+                <td>{{ evidence.uploaded_by }}</td>
+                <td>{{ evidence.upload_timestamp }}</td>
+                <td>{{ evidence.file_size }} bytes</td>
+                <td>{{ evidence.file_hash }}</td>
+            </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="5">
+                    No evidence uploaded for this finding.
+                </td>
+            </tr>
+        {% endif %}
+    </tbody>
+</table>
 
 
-{% if current_user.role in ["Auditor", "Manager"] %}
+{% if is_remediation_owner %}
 
 <h3>Upload Evidence</h3>
 
@@ -213,12 +288,7 @@ Finding Detail
         finding_id=finding.finding_id
     ) }}"
 >
-
-    <input
-        type="hidden"
-        name="csrf_token"
-        value="{{ csrf_token() }}"
-    >
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
     <label for="evidence_files">
         Evidence Files
@@ -235,7 +305,6 @@ Finding Detail
     <button type="submit">
         Upload Evidence
     </button>
-
 </form>
 
 {% endif %}
