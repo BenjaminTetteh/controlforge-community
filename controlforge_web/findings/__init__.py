@@ -22,6 +22,7 @@ from controlforge.repositories.findings_repository import (
 from flask_login import current_user
 from controlforge.repositories.findings_repository import (
     load_findings_for_engagement,
+    update_finding_assignments,
     update_finding_status as update_finding_status_record
 )
 from controlforge.evidence.upload_service import (
@@ -32,6 +33,8 @@ from controlforge.governance.workflow import (
     FINDING_STATUSES,
     is_valid_transition
 )
+
+
 
 
 findings_bp = Blueprint(
@@ -334,6 +337,72 @@ def upload_evidence(
 
     flash(
         f"{uploaded_count} evidence file(s) uploaded successfully."
+    )
+
+    return redirect(
+        url_for(
+            "findings.finding_detail",
+            client_slug=client_slug,
+            engagement_slug=engagement_slug,
+            finding_id=finding_id
+        )
+    )
+
+
+@findings_bp.route(
+    "/<client_slug>/<engagement_slug>/<finding_id>/assign",
+    methods=["POST"]
+)
+@login_required
+@roles_required(["Manager"])
+def assign_finding_roles(
+    client_slug,
+    engagement_slug,
+    finding_id
+):
+
+    remediation_owner = request.form.get(
+        "remediation_owner",
+        ""
+    ).strip()
+
+    assigned_auditor = request.form.get(
+        "assigned_auditor",
+        ""
+    ).strip()
+
+    closure_approver = request.form.get(
+        "closure_approver",
+        ""
+    ).strip()
+
+    update_finding_assignments(
+        client_slug=client_slug,
+        engagement_slug=engagement_slug,
+        finding_id=finding_id,
+        remediation_owner=remediation_owner,
+        assigned_auditor=assigned_auditor,
+        closure_approver=closure_approver
+    )
+
+    write_audit_event(
+        engagement_path=(
+            Path("clients")
+            / client_slug
+            / engagement_slug
+        ),
+        action="update_finding_assignments",
+        performed_by=current_user.username,
+        details={
+            "finding_id": finding_id,
+            "remediation_owner": remediation_owner,
+            "assigned_auditor": assigned_auditor,
+            "closure_approver": closure_approver
+        }
+    )
+
+    flash(
+        "Finding assignments updated successfully."
     )
 
     return redirect(

@@ -97,3 +97,39 @@ def update_finding_status(
     connection.commit()
 
     connection.close()
+
+
+def update_finding_assignments(
+    client_slug: str,
+    engagement_slug: str,
+    finding_id: str,
+    remediation_owner: str,
+    assigned_auditor: str,
+    closure_approver: str
+):
+
+    connection = get_db_connection()
+
+    connection.execute(
+        """
+        UPDATE findings
+        SET
+            remediation_owner = ?,
+            assigned_auditor = ?,
+            closure_approver = ?
+        WHERE client_slug = ?
+        AND engagement_slug = ?
+        AND finding_id = ?
+        """,
+        (
+            remediation_owner,
+            assigned_auditor,
+            closure_approver,
+            client_slug,
+            engagement_slug,
+            finding_id
+        )
+    )
+
+    connection.commit()
+    connection.close()

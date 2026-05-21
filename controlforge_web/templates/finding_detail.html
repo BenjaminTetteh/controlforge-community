@@ -73,6 +73,75 @@ Finding Detail
 
 {% if current_user.role in ["Auditor", "Manager"] %}
 
+
+{% if current_user.role == "Manager" %}
+
+<h3>Update Finding Assignments</h3>
+
+<form
+    method="post"
+    action="{{ url_for(
+        'findings.assign_finding_roles',
+        client_slug=request.view_args.client_slug,
+        engagement_slug=request.view_args.engagement_slug,
+        finding_id=finding.finding_id
+    ) }}"
+>
+
+    <input
+        type="hidden"
+        name="csrf_token"
+        value="{{ csrf_token() }}"
+    >
+
+    <label for="remediation_owner">
+        Remediation Owner
+    </label>
+
+    <input
+        type="text"
+        id="remediation_owner"
+        name="remediation_owner"
+        value="{{ finding.remediation_owner or '' }}"
+    >
+
+    <br><br>
+
+    <label for="assigned_auditor">
+        Assigned Auditor
+    </label>
+
+    <input
+        type="text"
+        id="assigned_auditor"
+        name="assigned_auditor"
+        value="{{ finding.assigned_auditor or '' }}"
+    >
+
+    <br><br>
+
+    <label for="closure_approver">
+        Closure Approver
+    </label>
+
+    <input
+        type="text"
+        id="closure_approver"
+        name="closure_approver"
+        value="{{ finding.closure_approver or '' }}"
+    >
+
+    <br><br>
+
+    <button type="submit">
+        Update Assignments
+    </button>
+
+</form>
+
+{% endif %}
+
+
 <h3>Update Finding Status</h3>
 
 <form method="post"
