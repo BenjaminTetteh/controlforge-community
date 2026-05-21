@@ -90,6 +90,20 @@ def initialize_database():
         """
     )
 
+    try:
+        cursor.execute(
+            "ALTER TABLE findings ADD COLUMN assigned_auditor TEXT"
+        )
+    except Exception:
+        pass
+
+    try:
+        cursor.execute(
+            "ALTER TABLE findings ADD COLUMN closure_approver TEXT"
+        )
+    except Exception:
+        pass
+
     cursor.execute(
         """
         CREATE TABLE IF NOT EXISTS evidence_files (

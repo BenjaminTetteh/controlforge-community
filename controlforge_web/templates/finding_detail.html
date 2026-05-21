@@ -54,6 +54,16 @@ Finding Detail
     </tr>
 
     <tr>
+        <th>Assigned Auditor</th>
+        <td>{{ finding.assigned_auditor or "Unassigned" }}</td>
+    </tr>
+
+    <tr>
+        <th>Closure Approver</th>
+        <td>{{ finding.closure_approver or "Unassigned" }}</td>
+    </tr>
+
+    <tr>
         <th>Issue Description</th>
         <td>{{ finding.issue_description }}</td>
     </tr>

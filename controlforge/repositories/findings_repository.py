@@ -23,6 +23,8 @@ def load_findings_for_engagement(
             status,
             remediation_owner,
             issue_description,
+            assigned_auditor,
+            closure_approver,
             raw_details
         FROM findings
         WHERE client_slug = ?
@@ -54,7 +56,9 @@ def load_findings_for_engagement(
                 "source_system": row["source_system"],
                 "status": row["status"],
                 "remediation_owner": row["remediation_owner"],
-                "issue_description": row["issue_description"]
+                "issue_description": row["issue_description"],
+                "assigned_auditor": row["assigned_auditor"],
+                "closure_approver": row["closure_approver"],
             }
         )
 
