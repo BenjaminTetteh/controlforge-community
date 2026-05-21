@@ -90,6 +90,24 @@ def initialize_database():
         """
     )
 
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS evidence_files (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            finding_id TEXT NOT NULL,
+            client_slug TEXT NOT NULL,
+            engagement_slug TEXT NOT NULL,
+            original_filename TEXT NOT NULL,
+            stored_filename TEXT NOT NULL,
+            uploaded_by TEXT NOT NULL,
+            upload_timestamp TEXT NOT NULL,
+            file_hash TEXT NOT NULL,
+            file_size INTEGER NOT NULL,
+            content_type TEXT NOT NULL
+        )
+        """
+    )
+
     connection.commit()
 
     connection.close()

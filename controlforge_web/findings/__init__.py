@@ -1,34 +1,36 @@
 import re
 from pathlib import Path
-
 from flask import (
     Blueprint,
     abort,
+    flash,
     redirect,
     render_template,
     request,
     url_for
 )
-
 from controlforge.audit.audit_logger import (
     write_audit_event
 )
-
 from flask_login import login_required
-
 from controlforge_web.auth.permissions import (
     roles_required
 )
-
 from controlforge.repositories.findings_repository import (
     update_finding_status as update_finding_status_record
 )
-
 from flask_login import current_user
-
 from controlforge.repositories.findings_repository import (
     load_findings_for_engagement,
     update_finding_status as update_finding_status_record
+)
+from controlforge.evidence.upload_service import (
+    process_evidence_upload
+)
+
+from controlforge.governance.workflow import (
+    FINDING_STATUSES,
+    is_valid_transition
 )
 
 
@@ -37,14 +39,6 @@ findings_bp = Blueprint(
     __name__,
     url_prefix="/findings"
 )
-
-
-ALLOWED_STATUSES = [
-    "Open",
-    "In Progress",
-    "Closed",
-    "Overdue"
-]
 
 
 def is_safe_slug(value: str) -> bool:
@@ -147,7 +141,7 @@ def finding_detail(
     return render_template(
         "finding_detail.html",
         finding=finding,
-        allowed_statuses=ALLOWED_STATUSES
+        allowed_statuses=FINDING_STATUSES
     )
 
 
@@ -196,12 +190,34 @@ def update_finding_status(
         "status"
     )
 
-    if new_status not in ALLOWED_STATUSES:
+    if new_status not in FINDING_STATUSES:
+
         abort(400)
+
+    
 
     old_status = finding.get(
         "status"
     )
+
+    if not is_valid_transition(
+        old_status,
+        new_status
+    ):
+
+        flash(
+            f"Invalid workflow transition: "
+            f"{old_status} → {new_status}"
+        )
+
+        return redirect(
+            url_for(
+                "findings.finding_detail",
+                client_slug=client_slug,
+                engagement_slug=engagement_slug,
+                finding_id=finding_id
+            )
+        )
 
     if old_status != new_status:
 
@@ -222,6 +238,103 @@ def update_finding_status(
                 "new_status": new_status
             }
         )
+
+    return redirect(
+        url_for(
+            "findings.finding_detail",
+            client_slug=client_slug,
+            engagement_slug=engagement_slug,
+            finding_id=finding_id
+        )
+    )
+
+@findings_bp.route(
+    "/<client_slug>/<engagement_slug>/<finding_id>/upload-evidence",
+    methods=["POST"]
+)
+@login_required
+@roles_required(["Auditor", "Manager"])
+def upload_evidence(
+    client_slug,
+    engagement_slug,
+    finding_id
+):
+
+    uploaded_files = request.files.getlist(
+        "evidence_files"
+    )
+
+    if not uploaded_files:
+
+        flash(
+            "No files uploaded."
+        )
+
+        return redirect(
+            url_for(
+                "findings.finding_detail",
+                client_slug=client_slug,
+                engagement_slug=engagement_slug,
+                finding_id=finding_id
+            )
+        )
+
+    max_files = 5
+
+    if len(uploaded_files) > max_files:
+
+        flash(
+            "You can upload a maximum of 5 files at a time."
+        )
+
+        return redirect(
+            url_for(
+                "findings.finding_detail",
+                client_slug=client_slug,
+                engagement_slug=engagement_slug,
+                finding_id=finding_id
+            )
+        )
+
+    uploaded_count = 0
+
+    for uploaded_file in uploaded_files:
+
+        success, message = process_evidence_upload(
+            uploaded_file=uploaded_file,
+            client_slug=client_slug,
+            engagement_slug=engagement_slug,
+            finding_id=finding_id,
+            uploaded_by=current_user.username
+        )
+
+        if success:
+
+            uploaded_count += 1
+
+            write_audit_event(
+                engagement_path=(
+                    Path("clients")
+                    / client_slug
+                    / engagement_slug
+                ),
+                action="upload_evidence",
+                performed_by=current_user.username,
+                details={
+                    "finding_id": finding_id,
+                    "filename": uploaded_file.filename
+                }
+            )
+
+        else:
+
+            flash(
+                message
+            )
+
+    flash(
+        f"{uploaded_count} evidence file(s) uploaded successfully."
+    )
 
     return redirect(
         url_for(

@@ -117,6 +117,51 @@ Finding Detail
 
 {% endif %}
 
+
+
+
+{% if current_user.role in ["Auditor", "Manager"] %}
+
+<h3>Upload Evidence</h3>
+
+<form
+    method="post"
+    enctype="multipart/form-data"
+    action="{{ url_for(
+        'findings.upload_evidence',
+        client_slug=request.view_args.client_slug,
+        engagement_slug=request.view_args.engagement_slug,
+        finding_id=finding.finding_id
+    ) }}"
+>
+
+    <input
+        type="hidden"
+        name="csrf_token"
+        value="{{ csrf_token() }}"
+    >
+
+    <label for="evidence_files">
+        Evidence Files
+    </label>
+
+    <input
+        type="file"
+        id="evidence_files"
+        name="evidence_files"
+        multiple
+        required
+    >
+
+    <button type="submit">
+        Upload Evidence
+    </button>
+
+</form>
+
+{% endif %}
+
+
 <p>
     <a href="{{ url_for(
         'dashboard.engagement_dashboard',

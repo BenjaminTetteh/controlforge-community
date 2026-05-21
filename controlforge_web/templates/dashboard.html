@@ -364,11 +364,21 @@ ControlForge Dashboard
                 <td>{{ event.action }}</td>
                 <td>{{ event.performed_by }}</td>
                 <td>
-                    Finding {{ event.details.finding_id }}
-                    changed from
-                    {{ event.details.old_status }}
-                    to
-                    {{ event.details.new_status }}
+                    {% if event.action == "update_finding_status" %}
+                        Finding {{ event.details.finding_id }}
+                        changed from
+                        {{ event.details.old_status }}
+                        to
+                        {{ event.details.new_status }}
+
+                    {% elif event.action == "upload_evidence" %}
+                        Evidence uploaded for
+                        {{ event.details.finding_id }}:
+                        {{ event.details.filename }}
+
+                    {% else %}
+                        {{ event.details }}
+                    {% endif %}
                 </td>
             </tr>
             {% endfor %}

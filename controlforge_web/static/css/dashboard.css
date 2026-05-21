@@ -99,9 +99,19 @@ th {
     color: #b71c1c;
 }
 
-.status-in-progress {
+.status-awaiting-remediation {
     background: #fff3e0;
     color: #e65100;
+}
+
+.status-remediation-submitted {
+    background: #e3f2fd;
+    color: #0d47a1;
+}
+
+.status-under-auditor-review {
+    background: #ede7f6;
+    color: #4527a0;
 }
 
 .status-closed {
@@ -109,9 +119,9 @@ th {
     color: #1b5e20;
 }
 
-.status-overdue {
-    background: #b71c1c;
-    color: white;
+.status-rejected {
+    background: #fce4ec;
+    color: #880e4f;
 }
 
 .filter-panel {
@@ -143,3 +153,12 @@ th {
     gap: 10px;
     align-items: center;
 }
+
+.flash-messages {
+    background: #e8f5e9;
+    border: 1px solid #81c784;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+}
+
