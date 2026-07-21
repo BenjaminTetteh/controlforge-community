@@ -8,7 +8,7 @@ Originally created to eliminate spreadsheet-driven User Access Reviews (UARs) an
 
 ---
 
-# 🚀 Why ControlForge?
+# Why ControlForge?
 
 Traditional IT audits often rely on manual spreadsheets, disconnected evidence, repetitive testing, and time-consuming reporting.
 
@@ -28,9 +28,9 @@ The goal is simple:
 
 ---
 
-# ✨ Core Capabilities
+# Core Capabilities
 
-## 📥 Evidence Onboarding
+## Evidence Onboarding
 
 - CSV
 - Excel (XLSX)
@@ -40,7 +40,7 @@ The goal is simple:
 
 ---
 
-## 🔍 Audit Automation
+## Audit Automation
 
 - User Access Reviews (UAR)
 - IT General Controls (ITGC)
@@ -54,7 +54,7 @@ The goal is simple:
 
 ---
 
-## 📊 Governance & Analytics
+## Governance & Analytics
 
 - Governance posture scoring
 - Risk concentration analysis
@@ -66,7 +66,7 @@ The goal is simple:
 
 ---
 
-## 📑 Reporting
+## Reporting
 
 - Executive summaries
 - Findings dashboards
@@ -76,7 +76,7 @@ The goal is simple:
 
 ---
 
-# 🏗️ Architecture
+# Architecture
 
 ```text
 Evidence Sources
@@ -102,7 +102,7 @@ Executive Reporting
 
 ---
 
-# 🎯 Supported Audit Areas
+# Supported Audit Areas
 
 Current support includes:
 
@@ -124,7 +124,7 @@ Planned support includes:
 
 ---
 
-# 📚 Framework Alignment
+# Framework Alignment
 
 Current and planned alignment includes:
 
@@ -138,7 +138,7 @@ Current and planned alignment includes:
 
 ---
 
-# 🌍 Community vs Enterprise
+# Community vs Enterprise
 
 | Community Edition | Enterprise Edition |
 |-------------------|--------------------|
@@ -151,7 +151,7 @@ Current and planned alignment includes:
 
 ---
 
-# 💻 Technology Stack
+# Technology Stack
 
 - Python
 - Flask
@@ -163,7 +163,7 @@ Current and planned alignment includes:
 
 ---
 
-# 🛣️ Roadmap
+# Roadmap
 
 ### In Progress
 
@@ -185,7 +185,7 @@ Current and planned alignment includes:
 
 ---
 
-# 🧪 Demo Data
+# Demo Data
 
 This repository intentionally includes:
 
@@ -197,7 +197,7 @@ No customer or sensitive production data is included.
 
 ---
 
-# 📖 Project Vision
+# Project Vision
 
 ControlForge is being developed to help organizations move beyond spreadsheet-driven audits toward secure, automated, and continuously governed audit operations.
 
@@ -205,13 +205,13 @@ Rather than replacing auditor judgment, ControlForge is designed to augment it b
 
 ---
 
-# 🤝 Contributing
+# Contributing
 
 Community feedback, issues, discussions, and contributions are welcome as ControlForge continues to evolve.
 
 ---
 
-# 👤 Author
+# Author
 
 **Benjamin Tetteh**
 
